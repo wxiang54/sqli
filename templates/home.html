@@ -1,0 +1,64 @@
+{% extends "template.html" %} {% block content %}
+<div class="container" style="margin-top: 50px; font-size: 3em; text-align: center;">
+    Welcome, {{session['username']}}!
+</div>
+<br>
+<br>
+
+<div class="card" style="width: 70%; margin: 0 auto; float: none;">
+    {% if "search" in session and session["search"] %}
+    <h3 class="card-header">Explore</h3>
+    <div class="card-block" style="padding: 30px">
+        <h4 class="card-title">Search for fellow bookface users!</h4>
+        <h6 class="card-subtitle mb-2 text-muted">(Because we know you're lonely here)</h6>
+        <br>
+        <br>
+        <form action="/search" method="POST">
+            <div class="form-group">
+                <input type="text" class="form-control" name="search" id="search" placeholder="Search by username!"> {% if searchResults is defined %}
+                {% if not searchResults %}
+                <p style="color: #ef5454">No results! Please search again.</p>
+                {% else %}
+                <div class="row">
+                    <br>
+                    {%- for result in searchResults %}
+                    <div class="col-md-3 mt-3 mb-3">
+                        <div class="card">
+                        <div class="card-block" style="border: solid 2px black; border-radius: 10px 10px 0 0;">
+                            <h4 class="card-title">{{result['username']}}</h4>
+                            <p class="card-text">
+                                Age: {{result['age']}}<br>
+                                Mutual Friends: {{result['numFriends']}}<br>
+                                {% if result['isSingle'] %}
+                                <b style="font-size: 2em; color: lime;"><i>SINGLE</i></b>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted" style="border: solid 2px black; border-radius: 0 0 10px 10px;">
+                            Joined {{result['timeJoined']}}h ago</h6>
+                        </div>
+                    </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                    {% endif %}
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+
+{% else %}
+
+<h3 class="card-header">No search bar this time <br><br>
+    Steal our data with a blind SQL Injection instead!</h3>
+
+{% endif %}
+
+</div>
+
+<br><br><br>
+
+
+{% endblock content %}

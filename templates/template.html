@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    {% block head %}
-    {% block title %}
-    <title>BookFace: Move Things and Breakfast</title>
+
+<head>
+    {% block head %} {% block title %}
+    <title>Bookface: Move Things and Breakfast</title>
     {% endblock title %}
-    {% endblock head %}
-  </head>
+
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/app.css"> {% endblock head %} {% block body %}
+    <nav class="navbar navbar-light bg-faded">
+        <p class="navbar-brand">
+            <img src="/static/images/fb-logo.png" width="60" height="60" class="d-inline-block align-top" alt=""> Bookface
+
+            <a href="/logout" class="text-muted mt-3" style="font-size: 0.5em; font-weight: 300; float: right;">
+        Logout
+        </a>
+        </p>
+    </nav>
+
+    {% if error is defined %}
+    <center>
+        <div style="color:red; margin-top:40px; background-color:white; padding:10px; display:inline-block; border: 2px solid black; border-radius: 15px;">
+            ERROR: {{ error }}
+        </div>
+    </center>
+    {% endif %} {% block content %} Default Content {% endblock content %}
+
+
+    <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
+    {% endblock body %}
+</head>
+
 </html>
-
-
