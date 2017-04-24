@@ -2,19 +2,21 @@ from flask import Flask, render_template, session, url_for, request, redirect
 import os.path
 import hashlib
 import sqlite3
-import time
 
 app = Flask(__name__)
-app.secret_key = "asdfghjkl"
+path = "/var/www/FlaskApp/sqli/data/"
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    
+    return render_template("index.html")
+
+@app.route("/demo", methods=["GET", "POST"])
+def demo():
     #MODIFY THIS LINE
-    session["search"] = False
+    session["search"] = True
     
-    if not os.path.isfile("data/injectMe.db"):
-        db = sqlite3.connect("data/injectMe.db")
+    if not os.path.isfile(path + "injectMe.db"):
+        db = sqlite3.connect(path + "injectMe.db")
         c = db.cursor()
         q = '''
             CREATE TABLE user (
@@ -48,17 +50,17 @@ def index():
         c.execute(q)
         db.commit()
     else:
-        db = sqlite3.connect("data/injectMe.db")
+        db = sqlite3.connect(path + "injectMe.db")
         c = db.cursor()
-        
 
+        
     if request.method == "GET":
         if "username" not in session:
             return render_template("login.html")
         else:
             return render_template("home.html")
 
-    else: 
+    else:
         username = request.form.get("username")
         password = request.form.get("password")
         password = hashlib.sha256(password).hexdigest()
@@ -71,20 +73,20 @@ def index():
         else:
             return render_template("login.html", error="Username and/or password is incorrect!")
 
-        
-@app.route('/logout')
+
+@app.route('/demo/logout')
 def logout():
     session.pop('username', None)
     session.pop('search', None)
-    return redirect( url_for("index") )
+    return redirect( url_for("demo") )
         
 
-@app.route('/search', methods=["GET", "POST"])
+@app.route('/demo/search', methods=["GET", "POST"])
 def search():
     if request.method == "GET":
-        return redirect( url_for("index") )
+        return redirect( url_for("demo") )
     
-    db = sqlite3.connect("data/injectMe.db")
+    db = sqlite3.connect(path + "injectMe.db")
     c = db.cursor()
     query = request.form.get("search")
     if query and query != " ":
