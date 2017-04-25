@@ -35,9 +35,8 @@
   <h2>What can it do?</h2>
   <p>
     <ul>
-      <li>Anything a potential hacker wants to do to your SQL database!</li>
       <li>Can lead to stolen data, lost data, or fake data in/from an app’s database</li>
-      <li>Some versions of SQL can even run regular SQL shell commands, and therefore are very dangerous if left vulnerable</li>
+      <li>Some implementations of SQL can even run regular SQL shell commands, and therefore are very dangerous if left vulnerable</li>
       <li>Some past examples of companies/organizations that have been targeted By SQLi attacks include:
 	<ul>
 	  <li>McAfee</li>
@@ -82,7 +81,7 @@
   <ul>
     <li><b>Double dash (--)</b> denotes an SQL comment
       <ul>
-	<li>Much like the double slash <i>//</i> in Java or the octothorpe <i>#</i> in Python</li>
+	<li>Much like the double slash (<i>//</i>) in Java or the octothorpe (<i>#</i>) in Python</li>
       </ul>
     </li>
 
@@ -142,7 +141,7 @@
 </p>
 
 
-<h2>Now onto the hacking Bookface!</h2>
+<h2>Now onto hacking Bookface!</h2>
 <p>
   <ul>
     <li>
@@ -163,9 +162,9 @@
     <li>
       <b>Step 2:</b> Find out what tables we have to exploit
       <ul>
-	<li>Enter this as your search query: <b>' UNION SELECT name, sql, 1, 1, 1 FROM sqlite_master;-- </b></li>
+	<li>Enter this as your search query: <b>' UNION SELECT name, sql, <span style="color:red;">1, 1, 1</span> FROM sqlite_master;-- </b></li>
 	<li>We're now exploiting the UNION keyword to add data to our query results that weren't meant to be added. Using our knowledge of the sqlite_master table, we're choosing to view every table's name and the query that created it.</li>
-	<li>Notice the three 1's we use for padding. We do this because the query returned from the backend has 5 columns, and you may recall that the malicious query we're appending MUST have the same amount of columns.</li>
+	<li>Notice the three <span style="color:red;">1</span>'s we use for padding. We do this because the table returned from the backend has 5 columns, and you may recall that the malicious query we're appending MUST have the same number of columns.</li>
 	<li>How did we know there are 5 columns returned by the backend? We used our inherent instincts of <b>G U E S S &nbsp;&nbsp; A N D &nbsp;&nbsp; C H E C K</b></li>
       </ul>
     </li>
