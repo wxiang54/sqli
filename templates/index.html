@@ -6,6 +6,7 @@
 
     <link rel="stylesheet" type="text/css" href="/sqli-static/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/sqli-static/css/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
   </head>
 
 </body>
@@ -15,10 +16,6 @@
     <span class="text-muted subtitle">
       by: ' OR 1=1; DROP TABLE user;-- 
     </span>
-
-    <a href="/sqli/demo" class="text-muted mt-3" style="font-size: 0.5em; font-weight: 300; float: right; background-color: rgba(0, 0, 0, .8); padding: 10px; border-radius: 10px;" target="_blank">
-      DEMO
-    </a>
   </p>
 </nav>
 
@@ -54,16 +51,16 @@
   <p>
     <ul>
       <li>
-	<b>First Order (Direct)</b>: An attack where the injected entry point is exploited and executed immediately (e.g. entering a malicious query into a login bar to gain unwarranted access)
+	<b>First Order (Direct)</b>: An attack where the injected entry point is exploited and executed immediately (e.g. an attacker entering a malicious query into a login bar to immediately gain unwarranted access)
       </li>
 
       <li>
-	<b>Second Order (Indirect)</b>: An attack where the entry point is used to store a malicious query to be executed at a later time, usually by another query (e.g. setting your username to something malicious, and then retreiving unwarranted data by corrupting future backend queries)
+	<b>Second Order (Indirect)</b>: An attack where the entry point is used to store a malicious query to be executed at a later time, usually by another query (e.g. an attacker setting their username to something malicious, and then retreiving unwarranted data by corrupting future backend queries)
       </li>
 
 
       <li>
-	<b>Blind Injection</b>: An attack where little to no data is sent back in response to a query, so you must "sniff around" the database schema more tediously to retreive useful/important data (think of robbing a house blindfolded)
+	<b>Blind Injection</b>: An attack where little to no data is sent back in response to a query, so an attacker must "sniff around" the database schema more tediously to retreive useful/important data (think of one robbing a house blindfolded)
       </li>
     </ul>
   </p>
@@ -81,23 +78,23 @@
   <ul>
     <li><b>Double dash (--)</b> denotes an SQL comment
       <ul>
-	<li>Much like the double slash (<i>//</i>) in Java or the octothorpe (<i>#</i>) in Python</li>
+	<li>Much like the double slash (//) in Java or the octothorpe (<i>#</i>) in Python</li>
       </ul>
     </li>
 
     <li><b>UNION</b> (also called horizontal append) is an SQL keyword that lets you append rows to a previous query
       <ul>
-	<li>Format: “<i>query1</i> UNION <i>query2</i>”</li>
-	<li>Example: “SELECT col1, col2, col3 FROM table1 UNION SELECT col1, col2, col3 FROM table2”</li>
+	<li>Format: <span class="code">&lt;query1&gt; <b>UNION</b> &lt;query2&gt;</span></li>
+	<li>Example: <span class="code">SELECT c1, c2, c3 FROM table1 <b>UNION</b> SELECT c1, c2, c3 FROM table2</span></li>
 	<li>The number of columns in second query MUST equal the number of columns in first query. Otherwise you'd get a pretty lopsided-looking table!</li>
       </ul>
     </li>
 
     <li>
-      Using a <b>number instead a column name</b>
+      <b>Numerical columns</b> (using a number instead of a column name)
       <ul>
-	<li>Example: “SELECT 1 FROM table1;”</li>
-	<li>All this does is print out a “1” for every row in table1</li>
+	<li>Example: <span class="code">SELECT <b>1</b> FROM table1;</span></li>
+	<li>This query returns a table with a “1” for every row in table1</li>
 	<li>Often used for filler data, especially in conjunction with UNIONs</li>
       </ul>
     </li>
@@ -147,36 +144,39 @@
     <li>
       <b>Step 1:</b> Gain access into the system
       <ul>
-	<li>Enter this as your username: <b>' OR 1=1;-- </b></li>
+	<li><b>Enter this as your username:</b> <span class="code"><b>' OR 1=1;-- </b></span></li>
 	<li>You should be logged in! To understand why this works, we need to imagine the SQL query being run when we enter our username and password. It should look something like: <br>
-	  <i>SELECT * FROM user WHERE username='<b>&lt;username&gt;</b>' AND password='<b>&lt;password&gt;</b>'</i></li>
+	  <i><span class="code">SELECT * FROM user WHERE username='<b>&lt;username&gt;</b>' AND password='<b>&lt;password&gt;</b>'</span></i></li>
 	<li>If we execute this query with our malicious username, it would evaluate to: <br>
-	  <i>SELECT * FROM user WHERE username='<b>' OR 1=1;-- </b><span class="text-muted">' AND password='&lt;password&gt;'</i></li></span>
+	  <i><span class="code">SELECT * FROM user WHERE username='<b>' OR 1=1;-- </b><span class="text-muted">' AND password='&lt;password&gt;'</span></i></li></span>
 	<li>The condition <b><i>WHERE username='' OR 1=1</i></b> will always return true, so the entire SELECT query returns all users in the <i>user</i> table.</li>
 	<li>Our backend script just selected the first user, which in this case was a user called <i>demo</i>. This is why you're logged in as <i>demo</i>!</li>
       </ul>
     </li>
     
-    <li>Now logged in, you should be presented with a search bar for user lookup. If you want to list every user on the site, then you can enter the same string you used to log in, by the same logic: <b>' OR 1=1;-- </b></li>
+    <li>Now logged in, you should be presented with a search bar for user lookup. If you want to list every user on the site, then you can enter the same string you used to log in, by the same logic: <br>
+      <span class="code"><b>' OR 1=1;-- </b></span></li>
 
     <li>
       <b>Step 2:</b> Find out what tables we have to exploit
       <ul>
-	<li>Enter this as your search query: <b>' UNION SELECT name, sql, <span style="color:red;">1, 1, 1</span> FROM sqlite_master;-- </b></li>
-	<li>We're now exploiting the UNION keyword to add data to our query results that weren't meant to be added. Using our knowledge of the sqlite_master table, we're choosing to view every table's name and the query that created it.</li>
-	<li>Notice the three <span style="color:red;">1</span>'s we use for padding. We do this because the table returned from the backend has 5 columns, and you may recall that the malicious query we're appending MUST have the same number of columns.</li>
-	<li>How did we know there are 5 columns returned by the backend? We used our inherent instincts of <b>G U E S S &nbsp;&nbsp; A N D &nbsp;&nbsp; C H E C K</b></li>
+	<li><b>Enter this as your search query:</b> <span class="code"><b>' UNION SELECT name, sql, <span style="color:darkred;">1, 1, 1</span> FROM sqlite_master;-- </b></span></li>
+	<li>If you see a few entries giving you some database schema code, you did it!</li>
+	<li>We just exploited the UNION keyword to add data to our query results that weren't meant to be added. Using our knowledge of the sqlite_master table, we're choosing to view every table's name and the query that created it.</li>
+	<li>Notice the three <span style="color:darkred;"><b>1</b></span>'s we use for padding. We do this because the table returned from the backend has 5 columns, and you may recall that the malicious query we're appending MUST have the same number of columns.</li>
+	<li>How did we know there are 5 columns returned by the backend? We used our inherent instincts of &nbsp;&nbsp;<b>G U E S S &nbsp;&nbsp; A N D &nbsp;&nbsp; C H E C K</b></li>
       </ul>
     </li>
 
-    <li>You now know EXACTLY what's in the user table. The <i>password</i> column should immediately catch your eye!</li>
+    <li>You now know what data lies inside the <i>user</i> table! Does anything catch your eye?</li>
     </li>
 
     <li>
-      <b>Step 3:</b> Gather them precious passwords (hashed of course)
+      <b>Step 3:</b> Gather the passwords
       <ul>
-	<li>Enter this as your search query: <b>' UNION SELECT username, password, 1, 1, 1 FROM user;-- </b></li>
-	<li>Enjoy your passwords! You can now do whatever you want with them: sell them? hold them for ransom? submit them for bug bounty? It's up to you!</li>
+	<li><b>Enter this as your search query:</b> <span class="code"><b>' UNION SELECT username, password, 1, 1, 1 FROM user;-- </b></span></li>
+	<li>See hashed passwords? You've done it!</li>
+	<li>Enjoy your passwords! You can now do whatever you want with them: Sell them? Hold them for ransom? Submit them for a bug bounty? It's up to you! (But don't do anything with these passwords though, we swear they're fake)</li>
       </ul>
     </li>    
   </ul>
